@@ -84,8 +84,12 @@ function [L, t_vec, S_vec, J_vec] = fixed_call_cn(T, K, N, M, r, q, sigma, Smax)
         % Retroceso en el tiempo
         for j = N+2:-1:2
 
-            % Neumann en la diagonal S=J: imponemos ∂L/∂J=0 en nivel actual
-            L(j-1, k, k) = L(j-1, k, k+1);
+            % 2º orden hacia delante en J si k<=M; 1º orden si k=M+1
+            if k <= M
+                L(j-1, k, k) = (4*L(j-1, k, k+1) - L(j-1, k, k+2))/3;
+            else
+                L(j-1, k, k) = L(j-1, k, k+1);
+            end
 
             % === Construcción del RHS (nivel C) ===
             Vij   = reshape(L(j, iL:iR, k), [], 1);
@@ -112,9 +116,6 @@ function [L, t_vec, S_vec, J_vec] = fixed_call_cn(T, K, N, M, r, q, sigma, Smax)
 
             % Resolver sistema tridiagonal
             L(j-1, iL:iR, k) = tridiagonal_matrix(A, d);
-
-            % Reimponer condición Neumann en j-1
-            L(j-1, k, k) = L(j-1, k, k+1);
 
             % Reciclar coeficientes para siguiente paso
             alphaC = alphaP; betaC = betaP; gammaC = gammaP;
