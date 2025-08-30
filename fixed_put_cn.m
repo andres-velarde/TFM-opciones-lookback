@@ -70,8 +70,13 @@ function [L, t_vec, S_vec, m_vec] = fixed_put_cn(T, K, N, M, r, q, sigma, Smax)
 
         % Retroceso temporal
         for j = N+2:-1:2
-            % Neumann en m (nivel actual)
-            L(j-1, k, k) = L(j-1, k, k-1);
+            
+            % 2º orden hacia atrás en J si k<=M; 1º orden si k=M+1
+            if k >=3
+                L(j-1, k, k) = (4*L(j-1, k, k-1) - L(j-1, k, k-2))/3;
+            else
+                L(j-1, k, k) = L(j-1, k, k-1);
+            end
 
             % RHS en j
             Vij   = reshape(L(j, iL:iR, k), [], 1);
@@ -97,9 +102,6 @@ function [L, t_vec, S_vec, m_vec] = fixed_put_cn(T, K, N, M, r, q, sigma, Smax)
             % Resolver sistema tridiagonal
             x = tridiagonal_matrix(A, d);
             L(j-1, iL:iR, k) = reshape(x, 1, []);
-
-            % Re-imponer Neumann en m
-            L(j-1, k, k) = L(j-1, k, k-1);
 
             % Reciclar coefs
             alphaC = alphaP; betaC = betaP; gammaC = gammaP;
