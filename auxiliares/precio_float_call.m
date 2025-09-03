@@ -59,10 +59,6 @@ for i = 1:num_sigmas
         errores(i) = NaN; % Evitar división por cero
     end
 
-    % ---------------------------------------------------------------------
-    % AÑADIENDO LAS NUEVAS COLUMNAS (MC LOOKBACK Y ERROR_MC)
-    % ---------------------------------------------------------------------
-    
     % Simulación Monte Carlo
     mc_valores(i) = mc_lookback_floating_call(S_eval,T,1000,1000, ...
                      @(t)r_val+t-t, @(t)q_val+t-t, @(t)sig_val+t-t);
@@ -84,3 +80,4 @@ Tbl = table(sigmas', valores_exactos, valores_simulacion, errores, ...
 
 % Mostrar la tabla
 disp(Tbl);
+
