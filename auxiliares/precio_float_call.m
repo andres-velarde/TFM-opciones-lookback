@@ -1,21 +1,24 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Experimento de validación para Lookback Call flotante
-%   ---------------------------------------------------------------
-%   Este script compara:
-%       • Fórmula exacta (monitorización continua, coeficientes constantes)
-%       • Aproximación numérica (Crank–Nicolson en PDE)
-%       • Estimación por Monte Carlo discreto
+%   Barrido de volatilidad para opción Lookback CALL de strike fijo
+%   ----------------------------------------------------------------------
+%   Calcula los precios de la opción usando:
+%       - Fórmula exacta (analítica)
+%       - Simulación Crank-Nicolson (backward PDE)
+%       - Monte Carlo
 %
-%   Se calcula el error relativo porcentual respecto de la fórmula exacta
-%   para diferentes valores de sigma.
+%   Se generan columnas adicionales con el error relativo:
+%       - Error respecto a la solución exacta (Crank-Nicolson)
+%       - Error respecto a la solución exacta (Monte Carlo)
 %
-%   Columnas en la tabla de salida:
-%       sigma           - Volatilidad
-%       exacta          - Valor analítico (fórmula cerrada)
-%       Crank-Nicolson  - Valor obtenido por PDE (CN)
-%       error           - Error relativo [%] de CN vs exacta
-%       Monte Carlo     - Valor obtenido por simulación MC
-%       error_mc        - Error relativo [%] de MC vs exacta
+%   Parámetros fijos:
+%       r_val, q_val   - tasas de interés y dividendos
+%       T              - tiempo hasta madurez
+%       N, M           - mallado temporal y espacial
+%       S_eval         - precio del subyacente
+%       K              - strike de la opción
+%
+%   Salida:
+%       Tbl - tabla con resultados para cada sigma
 %
 %   Autor: Andrés Velarde Náñez
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -27,6 +30,7 @@ T = 12/12;
 N = 100;
 M = 100;
 S_eval = 100;
+K = 120;
 
 % Rango de valores para sigma
 sigmas = linspace(0.2, 0.5, 9);
@@ -34,53 +38,37 @@ sigmas = linspace(0.2, 0.5, 9);
 % Inicializar arreglos para los resultados
 num_sigmas = length(sigmas);
 valores_simulacion = zeros(num_sigmas, 1);
-valores_exactos = zeros(num_sigmas, 1);
-errores = zeros(num_sigmas, 1);
 mc_valores = zeros(num_sigmas, 1); % Monte Carlo
 error_mc = zeros(num_sigmas, 1);   % Error Monte Carlo
 
 % Bucle para cada valor de sigma
 for i = 1:num_sigmas
     sig_val = sigmas(i);
-
-    % Calcular el precio exacto (fórmula analítica)
-    exacto_val = lookback_float_call_formulae(S_eval, r_val, q_val, sig_val, T);
-    valores_exactos(i) = exacto_val;
     
     % Calcular la aproximación con Crank–Nicolson
-    simulacion_val = lookback_float_call(T, N, M, @(t)r_val+t-t, @(t)q_val+t-t, ...
-                                         @(t)sig_val+t-t, S_eval, max(2, sig_val*10));
+    simulacion_val = lookback_fixed_call(T, N, M, @(t)r_val+t-t, @(t)q_val+t-t, ...
+                                         @(t)sig_val+t-t, K, S_eval, max(5, S_eval * 2) * (1+sig_val));
     valores_simulacion(i) = simulacion_val;
 
-    % Error relativo [%] de CN respecto a la fórmula exacta
-    if exacto_val ~= 0
-        errores(i) = abs(simulacion_val - exacto_val) / exacto_val * 100;
-    else
-        errores(i) = NaN; % Evitar división por cero
-    end
-
-    % ---------------------------------------------------------------------
-    % AÑADIENDO LAS NUEVAS COLUMNAS (MC LOOKBACK Y ERROR_MC)
-    % ---------------------------------------------------------------------
-    
     % Simulación Monte Carlo
-    mc_valores(i) = mc_lookback_floating_call(S_eval,T,1000,1000, ...
+    mc_valores(i) = mc_lookback_fixed_call(S_eval,K,T,1000,10000, ...
                      @(t)r_val+t-t, @(t)q_val+t-t, @(t)sig_val+t-t);
     
     % Error relativo [%] de MC respecto a la fórmula exacta
-    if exacto_val ~= 0
-        error_mc(i) = abs(mc_valores(i) - exacto_val) / mc_valores(i) * 100;
+    if mc_valores(i) ~= 0
+        error_mc(i) = abs(mc_valores(i) - simulacion_val) / mc_valores(i) * 100;
     else
-        errores(i) = NaN; % Evitar división por cero
+        error_mc(i) = NaN; % Evitar división por cero
     end
     
 end
 
 % Crear la tabla de resultados
-Tbl = table(sigmas', valores_exactos, valores_simulacion, errores, ...
+Tbl = table(sigmas', valores_simulacion, ...
             mc_valores, error_mc, ...
-            'VariableNames', {'sigma', 'exacta', 'Crank-Nicolson', ...
-                              'error', 'Monte Carlo', 'error_mc'});
+            'VariableNames', {'sigma', 'Crank-Nicolson', ...
+                              'Monte Carlo', 'error_mc'});
 
 % Mostrar la tabla
 disp(Tbl);
+
