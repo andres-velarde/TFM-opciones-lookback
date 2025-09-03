@@ -6,7 +6,7 @@
 %     • Derecha:  lookback PUT fija
 %
 %   Para cada caso se comparan tres métodos:
-%     - Fórmula cerrada (coeficientes constantes)
+%     - Fórmula cerrada (coeficientes constantes, SOLO EN EL CASO FIJO)
 %     - Aproximación por Crank–Nicolson (diferencias finitas)
 %     - Simulación de Monte Carlo
 %
@@ -68,8 +68,6 @@ val_mc_fix      = zeros(1,nS_fix);
 
 for i=1:nS_fix
     S0 = S_vals_fix(i);
-    % Fórmula cerrada (fijo put)
-    val_formula_fix(i) = lookback_fixed_put_formulae(S0, K, r_val, q_val, sig_val, T);
     % Diferencias finitas (CN)
     val_cn_fix(i)      = lookback_fixed_put(T, N, M, rfun, qfun, sigmafun, K, S0, max(S0*5, 10)*max(sig_val*5, 1));
     % Monte Carlo
@@ -92,11 +90,10 @@ grid on;
 
 % Subplot derecha: fija
 subplot(1,2,2);
-plot(S_vals_fix, val_formula_fix, 'k-',  'LineWidth', 2); hold on;
-plot(S_vals_fix, val_cn_fix,      'b--', 'LineWidth', 1.5);
+plot(S_vals_fix, val_cn_fix,      'b--', 'LineWidth', 1.5); hold on;
 plot(S_vals_fix, val_mc_fix,      'r:',  'LineWidth', 1.5);
 xlabel('Precio spot S_0');
 ylabel('Precio opción lookback PUT fija');
 title('Lookback fija (PUT, K=60)');
-legend('Fórmula cerrada','Crank–Nicolson','Monte Carlo','Location','northwest');
+legend('Crank–Nicolson','Monte Carlo','Location','northwest');
 grid on;
