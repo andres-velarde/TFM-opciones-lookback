@@ -14,9 +14,9 @@
 %   T      : madurez
 %   nSteps : número de pasos discretos
 %   nPaths : número de caminos Monte Carlo
-%   rfun   : handle para la tasa libre de riesgo r(t)
-%   qfun   : handle para la tasa de dividendos q(t)
-%   sigfun : handle para la volatilidad sigma(t)
+%   rfun   : tasa libre de riesgo r(t)
+%   qfun   : tasa de dividendos q(t)
+%   sigfun : volatilidad sigma(t)
 %
 % Salida:
 %   price  : precio estimado de la opción
@@ -26,10 +26,14 @@
 function price = mc_lookback_fixed_call(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
 
     dt  = T / nSteps;
-    tL  = (0:nSteps-1) * dt;          % instantes de evaluación por paso
+    tL  = (0:nSteps-1) * dt;          % instantes de evaluacion por paso
 
-    r   = rfun(tL);    q = qfun(tL);  sg = sigfun(tL);
-    r   = r(:)';       q = q(:)';     sg = sg(:)';
+    r   = rfun(tL);    
+    q = qfun(tL);  
+    sg = sigfun(tL);
+    r   = r(:)';      
+    q = q(:)';     
+    sg = sg(:)';
 
     mu  = (r - q - 0.5*sg.^2) * dt;
     vol = sg * sqrt(dt);
@@ -37,7 +41,7 @@ function price = mc_lookback_fixed_call(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
 
     Z = randn(nPaths, nSteps);          % N(0,1) i.i.d.
     S = S0 * ones(nPaths,1);
-    M = S;                              % máximo acumulado
+    M = S;                              % maximo acumulado
 
     for j = 1:nSteps
         S = S .* exp(mu(j) + vol(j) .* Z(:,j));
@@ -47,4 +51,5 @@ function price = mc_lookback_fixed_call(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
     pay   = max(M - K, 0);              % payoff lookback CALL
     price = DF * mean(pay);
 end
+
 
