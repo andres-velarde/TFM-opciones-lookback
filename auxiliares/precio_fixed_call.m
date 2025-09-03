@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Experimento de validación para Lookback Call flotante
+%   Experimento de validación para Lookback Call fija
 %   ---------------------------------------------------------------
 %   Este script compara:
 %       • Aproximación numérica (Crank–Nicolson en PDE)
@@ -64,3 +64,4 @@ Tbl = table(sigmas', valores_simulacion, ...
 
 % Mostrar la tabla
 disp(Tbl);
+
