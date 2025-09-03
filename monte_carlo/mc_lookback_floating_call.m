@@ -11,16 +11,12 @@
 %       T       - Tiempo hasta madurez
 %       nSteps  - Número de pasos discretos para monitorización
 %       nPaths  - Número de simulaciones Monte Carlo
-%       rfun    - Tasa libre de riesgo (handle vectorizable de t)
-%       qfun    - Tasa de dividendos (handle vectorizable de t)
-%       sigfun  - Volatilidad (handle vectorizable de t)
+%       rfun    - Tasa libre de riesgo
+%       qfun    - Tasa de dividendos
+%       sigfun  - Volatilidad
 %
 %   Salida:
 %       price   - Precio estimado de la opción Lookback CALL flotante
-%
-%   Nota:
-%       - Monitorización discreta en nSteps.
-%       - Payoff siempre >= 0.
 %
 %   Autor: Andrés Velarde Náñez
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,11 +25,13 @@ function price = mc_lookback_floating_call(S0,T,nSteps,nPaths,rfun,qfun,sigfun)
 
     % Paso temporal
     dt  = T / (nSteps + 1);
-    t   = linspace(0, T, nSteps+2); tL = t(1:end-1);    % nodos para Euler
-    r   = rfun(tL);  q = qfun(tL);  sg = sigfun(tL);
+    t   = linspace(0, T, nSteps+2); tL = t(1:end-1);
+    r   = rfun(tL);  
+    q = qfun(tL);  
+    sg = sigfun(tL);
 
     % Coeficientes de movimiento geométrico
-    mu  = (r - q - 0.5*sg.^2) * dt;                     % media logarítmica
+    mu  = (r - q - 0.5*sg.^2) * dt;                      % media logarítmica
     vol = sg * sqrt(dt);                                 % desviación estándar
     DF  = exp(-sum(r) * dt);                             % factor de descuento
 
@@ -53,3 +51,4 @@ function price = mc_lookback_floating_call(S0,T,nSteps,nPaths,rfun,qfun,sigfun)
     price = DF * mean(pay);
 
 end
+
