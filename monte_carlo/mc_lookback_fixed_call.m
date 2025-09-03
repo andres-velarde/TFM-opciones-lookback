@@ -29,7 +29,7 @@ function price = mc_lookback_fixed_call(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
     tL  = (0:nSteps-1) * dt;          % instantes de evaluación por paso
 
     r   = rfun(tL);    q = qfun(tL);  sg = sigfun(tL);
-    r   = r(:)';       q = q(:)';     sg = sg(:)';   % aseguramos fila
+    r   = r(:)';       q = q(:)';     sg = sg(:)';
 
     mu  = (r - q - 0.5*sg.^2) * dt;
     vol = sg * sqrt(dt);
@@ -47,3 +47,4 @@ function price = mc_lookback_fixed_call(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
     pay   = max(M - K, 0);              % payoff lookback CALL
     price = DF * mean(pay);
 end
+
