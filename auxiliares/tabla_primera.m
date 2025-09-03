@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Errores y tiempos: opciones lookback flotantes y fijas (CN vs MC)
+% Errores y tiempos: opciones lookback flotantes y fijas (CN vs fórmula)
 % -------------------------------------------------------------------------
 % Calcula errores relativos (%) y tiempos de ejecución promedio
 % para diferentes tamaños de malla (N,M) y volatilidades sigma.
