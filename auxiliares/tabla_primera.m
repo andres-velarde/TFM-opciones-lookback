@@ -14,7 +14,7 @@ r_val = 0.1;
 q_val = 0.25;
 T     = 10/12;
 K     = 100;
-Smax  = 300;
+Smax  = 500;
 spots_float = 50:20:150;   % rango para flotante
 spots_fixed = 100:10:150;  % rango para fija
 sigmas = [0.05 0.12 0.19 0.26 0.33 0.40];  % volatilidades
@@ -67,3 +67,4 @@ for g = 1:size(grids,1)
     end
     fprintf('\n');
 end
+
