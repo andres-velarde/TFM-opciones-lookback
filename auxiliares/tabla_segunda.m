@@ -37,7 +37,7 @@ for i = 1:length(sigmas)
 
         % Valor exacto
         MC(i, j) = mc_lookback_fixed_put(S0,K,T,2e4,2e4, ...
-        %             @(t)r_val+t-t, @(t)q_val+t-t, @(t)sigma+t-t);
+                    @(t)r_val+t-t, @(t)q_val+t-t, @(t)sigma+t-t);
         
     end
 end
@@ -47,3 +47,4 @@ errores = (CN-MC) ./ MC*100;
 disp('=== Errores relativos (%) ===');
 disp(array2table(errores, 'VariableNames', ...
     strcat("S0_", string(S0_vals)), 'RowNames', strcat("sigma_", string(sigmas*100))));
+
