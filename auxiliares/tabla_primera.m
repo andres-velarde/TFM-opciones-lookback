@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Errores y tiempos: opciones lookback flotantes y fijas (CN vs fórmula)
+% Errores y tiempos: opciones lookback flotantes y fijas (CN vs MC)
 % -------------------------------------------------------------------------
 % Calcula errores relativos (%) y tiempos de ejecución promedio
 % para diferentes tamaños de malla (N,M) y volatilidades sigma.
@@ -55,10 +55,16 @@ for g = 1:size(grids,1)
             S0 = spots_fixed(idx);
             % Precio CN
             Vcn(idx) = lookback_fixed_put(T,N,M,@(t)r_val+t-t,@(t)q_val+t-t,@(t)sig_val+t-t,K,S0,300);
-            % Fórmula cerrada
-            Vex(idx) = lookback_fixed_put_formulae(S0,K,r_val,q_val,sig_val,T);
         end
         t_fixed = toc/length(spots_fixed);
+        
+        for idx = 1:length(spots_fixed)
+            S0 = spots_fixed(idx);
+            % Fórmula cerrada
+            Vex(idx) = mc_lookback_fixed_put(S0,K,T,2e4,2e4, ...
+                     @(t)r_val+t-t, @(t)q_val+t-t, @(t)sig_val+t-t);
+       end
+        
         err_fixed = max(abs(Vcn-Vex)) / max(Vex)*100;
 
         % --- Mostrar fila ---
