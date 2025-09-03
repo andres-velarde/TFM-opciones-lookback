@@ -7,7 +7,7 @@
 %   Características:
 %       • Opción PUT flotante europea
 %       • Monitorización discreta en nSteps
-%       • Generador normal estándar (antitéticos opcionales, no usados)
+%       • Generador normal estándar
 %       • Payoff:  M_T - S_T   (siempre >= 0)
 %
 %   Parámetros de entrada:
@@ -61,3 +61,4 @@ function price = mc_lookback_floating_put(S0,T,nSteps,nPaths,rfun,qfun,sigfun)
     % Valor esperado
     price = mean(discPay);
 end
+
