@@ -53,7 +53,7 @@ for i = 1:num_sigmas
     valores_exactos(i) = exacto_val;
    
     % Calcular el precio mediante Crank-Nicolson
-    simulacion_val = lookback_fixed_call(T, N, M, @(t)r_val+t-t, @(t)q_val+t-t, @(t)sig_val+t-t, K, S_eval, max(S0*2, 5)* (1+sig_val));
+    simulacion_val = lookback_fixed_call(T, N, M, @(t)r_val+t-t, @(t)q_val+t-t, @(t)sig_val+t-t, K, S_eval, max(S_eval*2, 5)* (1+sig_val));
     valores_simulacion(i) = simulacion_val;
 
     % Error relativo porcentual para Crank-Nicolson
@@ -76,3 +76,4 @@ Tbl = table(sigmas', valores_exactos, valores_simulacion, errores, mc_valores, e
 
 % Mostrar la tabla
 disp(Tbl);
+
