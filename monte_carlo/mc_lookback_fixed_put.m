@@ -11,9 +11,9 @@
 %   T      - tiempo hasta madurez
 %   nSteps - número de pasos discretos en el tiempo
 %   nPaths - número de simulaciones Monte Carlo
-%   rfun   - función handle de la tasa libre de riesgo en el tiempo
-%   qfun   - función handle de dividendos en el tiempo
-%   sigfun - función handle de volatilidad en el tiempo
+%   rfun   - tasa libre de riesgo en el tiempo
+%   qfun   - dividendos en el tiempo
+%   sigfun - volatilidad en el tiempo
 %
 % Salida:
 %   price  - precio promedio descontado de la opción
@@ -32,7 +32,7 @@ function price = mc_lookback_fixed_put(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
 
     Z = randn(nPaths,nSteps);
     S = S0*ones(nPaths,1);
-    m = S; % mínimo acumulado
+    m = S;                              % mínimo acumulado
 
     for j=1:nSteps
         S = S .* exp(mu(j) + vol(j).*Z(:,j));
@@ -42,3 +42,4 @@ function price = mc_lookback_fixed_put(S0,K,T,nSteps,nPaths,rfun,qfun,sigfun)
     pay = max(K - m, 0);
     price = DF * mean(pay);
 end
+
